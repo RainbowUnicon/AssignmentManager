@@ -63,6 +63,7 @@ import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -75,6 +76,7 @@ import com.itextpdf.layout.property.TextAlignment;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import javax.swing.JSlider;
 
 public class Main {
 	public static final String CONFIG_FILENAME = "config.properties";
@@ -84,7 +86,7 @@ public class Main {
 	private final ArrayList<File> selectedFiles;
 
 	private JFrame frmCsPdfMerge;
-	
+
 	private JPanel mainPanel;
 	private JPanel optionPanel;
 	private JPanel settingsPanel;
@@ -98,6 +100,9 @@ public class Main {
 	private JButton btnChoose;
 	private JButton btnBack;
 	private JButton btnRemove;
+	private JButton btnCompression;
+	private JButton btnUnimplemented;
+	private JButton btnUnimplemented_1;
 
 	private JComboBox<String> comboBoxType;
 	private JComboBox<Assignment> comboBoxAssignment;
@@ -112,7 +117,7 @@ public class Main {
 	private JSpinner spinnerCategoryNumber;
 
 	private JCheckBox chckbxFullFilePath;
-	private JCheckBox chckbxUnequalPageSize;
+	private JCheckBox chckbx612x792;
 	private JCheckBox chckbxManualMode;
 	private JCheckBox checkBox;
 	private JCheckBox checkBox_1;
@@ -406,6 +411,26 @@ public class Main {
 		Component horizontalStrut_12 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_12);
 
+		final Box horizontalBox_9 = Box.createHorizontalBox();
+		settingsPanel.add(horizontalBox_9);
+
+		final Component horizontalStrut_18 = Box.createHorizontalStrut(20);
+		horizontalBox_9.add(horizontalStrut_18);
+
+		btnCompression = new JButton("Compression: 3");
+		horizontalBox_9.add(btnCompression);
+
+		btnUnimplemented = new JButton("Unimplemented");
+		btnUnimplemented.setEnabled(false);
+		horizontalBox_9.add(btnUnimplemented);
+
+		btnUnimplemented_1 = new JButton("Unimplemented");
+		btnUnimplemented_1.setEnabled(false);
+		horizontalBox_9.add(btnUnimplemented_1);
+
+		final Component horizontalStrut_19 = Box.createHorizontalStrut(20);
+		horizontalBox_9.add(horizontalStrut_19);
+
 		Component verticalGlue_1 = Box.createVerticalGlue();
 		settingsPanel.add(verticalGlue_1);
 
@@ -455,16 +480,15 @@ public class Main {
 		gbc_checkBox.gridy = 1;
 		panel_2.add(checkBox, gbc_checkBox);
 
-		chckbxUnequalPageSize = new JCheckBox("Unequal Page Size");
-		chckbxUnequalPageSize.setEnabled(false);
-		chckbxUnequalPageSize.setPreferredSize(new Dimension(160, 23));
-		chckbxUnequalPageSize.setMaximumSize(new Dimension(160, 23));
-		chckbxUnequalPageSize.setMinimumSize(new Dimension(160, 23));
+		chckbx612x792 = new JCheckBox("Page Size: 612 x792");
+		chckbx612x792.setPreferredSize(new Dimension(160, 23));
+		chckbx612x792.setMaximumSize(new Dimension(160, 23));
+		chckbx612x792.setMinimumSize(new Dimension(160, 23));
 		GridBagConstraints gbc_chckbxUnequalPageSize = new GridBagConstraints();
 		gbc_chckbxUnequalPageSize.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxUnequalPageSize.gridx = 0;
 		gbc_chckbxUnequalPageSize.gridy = 2;
-		panel_2.add(chckbxUnequalPageSize, gbc_chckbxUnequalPageSize);
+		panel_2.add(chckbx612x792, gbc_chckbxUnequalPageSize);
 
 		checkBox_1 = new JCheckBox("Unimplemented    ");
 		checkBox_1.setEnabled(false);
@@ -511,7 +535,7 @@ public class Main {
 		Component verticalStrut_3 = Box.createVerticalStrut(10);
 		settingsPanel.add(verticalStrut_3);
 
-		
+
 
 		//Set Component		
 		spinnerHomeworkNumber.setModel(new SpinnerNumberModel(config.getInt("previousHWNumber"),0,99,1));
@@ -522,6 +546,7 @@ public class Main {
 
 		chckbxFullFilePath.setSelected(config.getBoolean("useFullFilePath"));
 		chckbxManualMode.setSelected(config.getBoolean("manualMode"));
+		chckbx612x792.setSelected(config.getBoolean("use612x792"));
 
 		final String saveAt = config.getString("saveAt");
 		textfieldSaveAs.setText(saveAt != null ? saveAt: System.getProperty("user.home"));
@@ -531,7 +556,7 @@ public class Main {
 				"Wireshark Lab Homework[LAB]", 
 				"Programming Homework[PRG]"
 		};
-		
+
 		comboBoxType.setModel(new DefaultComboBoxModel<String>(typeOptions));
 
 		btnBack.addActionListener(listener);
@@ -543,13 +568,14 @@ public class Main {
 		btnDown.addActionListener(listener);
 		btnRemove.addActionListener(listener);
 		btnOpen.addActionListener(listener);
+		btnCompression.addActionListener(listener);
 
 		CardLayout layout = (CardLayout)optionPanel.getLayout();
 		if(chckbxManualMode.isSelected())
 			layout.first(Main.this.optionPanel);
 		else
 			layout.last(Main.this.optionPanel);
-		
+
 		List<Assignment> assignments = parse();
 		for(Assignment assignment : assignments){
 			comboBoxAssignment.addItem(assignment);
@@ -562,7 +588,7 @@ public class Main {
 	private List<Assignment> parse(){
 		final List<Assignment> toReturn = new ArrayList<Assignment>();
 		final List<String> buffer = new ArrayList<String>();
-		
+
 		try {
 			final URL url = new URL(config.getString("assignmentUpdateLocation"));
 			try(final Scanner s = new Scanner(url.openStream())){
@@ -575,10 +601,10 @@ public class Main {
 					"Parse failed!",
 					JOptionPane.WARNING_MESSAGE);
 			ex.printStackTrace();
-			
+
 			toReturn.clear();
 			buffer.clear();
-		
+
 			try (final Scanner s = new Scanner(new File(config.getString("assignmentCache")))){
 				parseHelper(s,buffer,toReturn);
 				return toReturn;
@@ -591,7 +617,7 @@ public class Main {
 				System.exit(-1);
 			}
 		}
-		
+
 		try(final PrintWriter writer = new PrintWriter(new File(config.getString("assignmentCache")))) {
 			for(String line : buffer)
 				writer.println(line);
@@ -642,7 +668,7 @@ public class Main {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy, hh:mm a", Locale.ENGLISH);
 				endDate = LocalDate.parse(line, formatter);
 			}
-			
+
 			if(currDate.isAfter(startDate) && currDate.isBefore(endDate))
 				toReturn.add(assignment);
 		}
@@ -697,6 +723,28 @@ public class Main {
 			else if(actor == btnChoose){
 				openFileChooser2();
 			}
+			else if(actor == btnCompression){
+				openCompression();
+			}
+		}
+
+		private void openCompression(){
+			final String[] compLevel = {
+					"1. FASTEST", 
+					"2. FAST", 
+					"3. NORMAL",
+					"4. ULTRA",
+					"5. MAXIMUM"
+			};
+			final String input = (String)JOptionPane.showInputDialog(
+					Main.this.frmCsPdfMerge,
+					"Choose Compression Level",
+					"Compression Level", JOptionPane.PLAIN_MESSAGE,
+					null,
+					compLevel,
+					compLevel[btnCompression.getText().charAt(13)-49]);
+			if(input != null) btnCompression.setText("Compression: "+input.charAt(0));
+
 		}
 
 		/*
@@ -961,6 +1009,7 @@ public class Main {
 			try{
 				PdfDocument doc = new PdfDocument(new PdfWriter(".temp.pdf"));
 				Document tempDoc = new Document(doc);
+				doc.setDefaultPageSize(chckbx612x792.isSelected() ? PageSize.A4 : new PageSize(612,792));
 				tempDoc.setTextAlignment(TextAlignment.JUSTIFIED);
 				PdfFont normal = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN);
 
@@ -1015,6 +1064,7 @@ public class Main {
 		private boolean addImage(PdfDocument outputDoc, File file){
 			try{
 				PdfDocument doc = new PdfDocument(new PdfWriter(".temp.pdf"));
+				doc.setDefaultPageSize(chckbx612x792.isSelected() ?  new PageSize(612,792) : PageSize.A4);
 				Document tempDoc = new Document(doc);
 				tempDoc.add(new Image(ImageDataFactory.create(file.getAbsolutePath())));
 				tempDoc.close();
@@ -1031,13 +1081,28 @@ public class Main {
 
 		private void makeZip(String filePath){
 			try {
-				ZipFile output = new ZipFile(filePath+".zip");
-				ZipParameters parameters = new ZipParameters();
+				final ZipFile output = new ZipFile(filePath+".zip");
+				final ZipParameters parameters = new ZipParameters();
 				parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-				parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-				for(File file : selectedFiles){
-					output.addFile(file, parameters);
+				switch(btnCompression.getText()){
+				case "Compression: 1":
+					parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_FASTEST);
+					break;
+				case "Compression: 2":
+					parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_FAST);
+					break;
+				case "Compression: 3":
+					parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+					break;
+				case "Compression: 4":
+					parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
+					break;
+				case "Compression: 5":
+					parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+					break;
 				}
+				for(File file : selectedFiles)
+					output.addFile(file, parameters);
 				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
 						filePath+".zip" + " is generated!\n"
 								+ "MAKE SURE FILE IS VALID!!!",
