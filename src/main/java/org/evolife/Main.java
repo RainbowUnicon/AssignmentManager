@@ -97,52 +97,17 @@ public class Main {
 	private JPanel panel_5;
 	private JSpinner spinner;
 	private JTextField firstNameTextField;
-	private Box horizontalBox;
-	private Box verticalBox;
-	private Component horizontalStrut;
-	private Component horizontalStrut_1;
-	private Component horizontalStrut_2;
-	private Component horizontalStrut_4;
-	private Component horizontalStrut_6;
-	private Component horizontalStrut_5;
-	private Component horizontalStrut_7;
-	private Component horizontalStrut_8;
-	private Box verticalBox_1;
-	private Box horizontalBox_4;
-	private Component verticalGlue;
-	private Component horizontalStrut_3;
-	private Component verticalStrut;
-	private Component horizontalStrut_9;
-	private JLabel lblHwCategory;
-	private Component horizontalStrut_10;
 	private JSpinner spinner_1;
 	private JButton btnUp;
 	private JButton btnDown;
 	private JPanel panel_1;
-	private JLabel lblSetting;
-	private Box horizontalBox_5;
-	private Component verticalStrut_1;
-	private Component verticalStrut_2;
-	private Box horizontalBox_6;
 	private JTextField saveAtTextfield;
 	private JButton btnChooseButton;
-	private Component horizontalStrut_11;
-	private Component horizontalStrut_12;
-	private Component horizontalStrut_13;
-	private JLabel lblSaveLocation;
 	private JButton btnBackButton;
-	private Box horizontalBox_7;
-	private Component verticalGlue_1;
-	private Component verticalStrut_3;
-	private Box horizontalBox_8;
 	private JPanel panel_2;
-	private Component horizontalStrut_14;
-	private Component horizontalStrut_15;
 	private JCheckBox chckbxFullFilePath;
 	private JCheckBox chckbxUnequalPageSize;
 	private JCheckBox chckbxManualMode;
-	private JLabel lblNewLabel;
-	private Component verticalGlue_2;
 	private JCheckBox checkBox;
 	private JCheckBox checkBox_1;
 	private JCheckBox checkBox_2;
@@ -151,8 +116,6 @@ public class Main {
 	private JPanel panel_6;
 	private JLabel lblAssignment;
 	private JComboBox<Assignment> comboBoxAssignment;
-	private Component horizontalStrut_16;
-	private Component horizontalStrut_17;
 	private JPanel panel;
 	
 	/**
@@ -220,15 +183,15 @@ public class Main {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		frmCsPdfMerge.getContentPane().add(panel, "name_101361563781040");
 
-		verticalBox = Box.createVerticalBox();
+		Box verticalBox = Box.createVerticalBox();
 		panel.add(verticalBox);
 
-		horizontalBox = Box.createHorizontalBox();
+		Box horizontalBox = Box.createHorizontalBox();
 		horizontalBox.setMaximumSize(new Dimension(560, 25));
 		horizontalBox.setBorder(new EmptyBorder(0, 0, 0, 0));
 		verticalBox.add(horizontalBox);
 
-		horizontalStrut_5 = Box.createHorizontalStrut(17);
+		Component horizontalStrut_5 = Box.createHorizontalStrut(17);
 		horizontalBox.add(horizontalStrut_5);
 
 		JLabel lblFirstName = new JLabel("First Name:");
@@ -244,7 +207,7 @@ public class Main {
 			firstNameTextField.setText(firstName);
 		}
 
-		horizontalStrut_7 = Box.createHorizontalStrut(10);
+		Component horizontalStrut_7 = Box.createHorizontalStrut(10);
 		horizontalBox.add(horizontalStrut_7);
 
 		JLabel lblLastName = new JLabel("Last Name:");
@@ -260,7 +223,7 @@ public class Main {
 			lastNameTextField.setText(lastName);
 		}
 
-		horizontalStrut_6 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_6 = Box.createHorizontalStrut(5);
 		horizontalBox.add(horizontalStrut_6);
 
 		panel_3 = new JPanel();
@@ -278,7 +241,7 @@ public class Main {
 		horizontalBox_1.setMaximumSize(new Dimension(560, 30));
 		horizontalBox_1.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-		horizontalStrut_4 = Box.createHorizontalStrut(54);
+		Component horizontalStrut_4 = Box.createHorizontalStrut(54);
 		horizontalBox_1.add(horizontalStrut_4);
 
 		JLabel lblNumber = new JLabel("HW #:");
@@ -294,7 +257,7 @@ public class Main {
 		spinner.setModel(new SpinnerNumberModel(hwNumber,0,99,1));
 
 
-		horizontalStrut_8 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_8 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_8);
 
 		JLabel lblProjectType = new JLabel("Type:");
@@ -305,10 +268,10 @@ public class Main {
 		horizontalBox_1.add(typeComboBox);
 		typeComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Problem Homework[PRB]", "Wireshark Lab Homework[LAB]", "Programming Homework[PRG]"}));
 
-		horizontalStrut_10 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_10 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_10);
 
-		lblHwCategory = new JLabel("Category #:");
+		JLabel lblHwCategory = new JLabel("Category #:");
 		horizontalBox_1.add(lblHwCategory);
 
 
@@ -317,7 +280,7 @@ public class Main {
 		horizontalBox_1.add(spinner_1);
 		spinner_1.setModel(new SpinnerNumberModel(categoryNumber,0,99,1));
 
-		horizontalStrut_9 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_9 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_9);
 		
 		panel_6 = new JPanel();
@@ -325,7 +288,7 @@ public class Main {
 		panel_3.add(panel_6, "name_116162073956175");
 		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.X_AXIS));
 		
-		horizontalStrut_16 = Box.createHorizontalStrut(38);
+		Component horizontalStrut_16 = Box.createHorizontalStrut(38);
 		panel_6.add(horizontalStrut_16);
 		
 		lblAssignment = new JLabel("Choose:");
@@ -339,7 +302,7 @@ public class Main {
 		comboBoxAssignment.setMinimumSize(new Dimension(200, 27));
 		panel_6.add(comboBoxAssignment);
 		
-		horizontalStrut_17 = Box.createHorizontalStrut(88);
+		Component horizontalStrut_17 = Box.createHorizontalStrut(88);
 		panel_6.add(horizontalStrut_17);
 
 
@@ -347,29 +310,29 @@ public class Main {
 		horizontalBox_2.setBorder(new EmptyBorder(0, 0, 0, 0));
 		verticalBox.add(horizontalBox_2);
 
-		verticalBox_1 = Box.createVerticalBox();
+		Box verticalBox_1 = Box.createVerticalBox();
 		verticalBox_1.setBorder(new EmptyBorder(0, 0, 0, 0));
 		horizontalBox_2.add(verticalBox_1);
 
-		verticalStrut = Box.createVerticalStrut(5);
+		Component verticalStrut = Box.createVerticalStrut(5);
 		verticalStrut.setMaximumSize(new Dimension(0, 20));
 		verticalBox_1.add(verticalStrut);
 
-		horizontalBox_4 = Box.createHorizontalBox();
+		Box horizontalBox_4 = Box.createHorizontalBox();
 		horizontalBox_4.setMaximumSize(new Dimension(100, 25));
 		horizontalBox_4.setBorder(new EmptyBorder(0, 0, 0, 0));
 		verticalBox_1.add(horizontalBox_4);
 
-		horizontalStrut_2 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_2 = Box.createHorizontalStrut(5);
 		horizontalBox_4.add(horizontalStrut_2);
 
 		JLabel lblFileSelected = new JLabel("File Selected:");
 		horizontalBox_4.add(lblFileSelected);
 
-		horizontalStrut_3 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_3 = Box.createHorizontalStrut(5);
 		horizontalBox_4.add(horizontalStrut_3);
 
-		verticalGlue = Box.createVerticalGlue();
+		Component verticalGlue = Box.createVerticalGlue();
 		verticalBox_1.add(verticalGlue);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -408,7 +371,7 @@ public class Main {
 		horizontalBox_3.setBorder(new EmptyBorder(0, 0, 0, 0));
 		verticalBox.add(horizontalBox_3);
 
-		horizontalStrut = Box.createHorizontalStrut(5);
+		Component horizontalStrut = Box.createHorizontalStrut(5);
 		horizontalBox_3.add(horizontalStrut);
 
 
@@ -428,35 +391,35 @@ public class Main {
 		btnSetting = new JButton("Settings");
 		horizontalBox_3.add(btnSetting);
 
-		horizontalStrut_1 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_1 = Box.createHorizontalStrut(5);
 		horizontalBox_3.add(horizontalStrut_1);
 
 		panel_1 = new JPanel();
 		frmCsPdfMerge.getContentPane().add(panel_1, "name_101378567290148");
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
-		verticalStrut_1 = Box.createVerticalStrut(5);
+		Component verticalStrut_1 = Box.createVerticalStrut(5);
 		panel_1.add(verticalStrut_1);
 
-		horizontalBox_5 = Box.createHorizontalBox();
+		Box horizontalBox_5 = Box.createHorizontalBox();
 		horizontalBox_5.setBorder(new EmptyBorder(0, 0, 0, 0));
 		panel_1.add(horizontalBox_5);
 
-		lblSetting = new JLabel("Settings");
+		JLabel lblSetting = new JLabel("Settings");
 		horizontalBox_5.add(lblSetting);
 
-		verticalStrut_2 = Box.createVerticalStrut(5);
+		Component verticalStrut_2 = Box.createVerticalStrut(5);
 		panel_1.add(verticalStrut_2);
 
-		horizontalBox_6 = Box.createHorizontalBox();
+		Box horizontalBox_6 = Box.createHorizontalBox();
 		horizontalBox_6.setBorder(new EmptyBorder(0, 0, 0, 0));
 		horizontalBox_6.setMaximumSize(new Dimension(560, 25));
 		panel_1.add(horizontalBox_6);
 
-		horizontalStrut_11 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_11 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_11);
 
-		lblSaveLocation = new JLabel("Save At:");
+		JLabel lblSaveLocation = new JLabel("Save At:");
 		horizontalBox_6.add(lblSaveLocation);
 
 		saveAtTextfield = new JTextField();
@@ -472,25 +435,25 @@ public class Main {
 			saveAtTextfield.setText(saveAt);
 		}
 
-		horizontalStrut_13 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_13 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_13);
 
 		btnChooseButton = new JButton("Choose");
 		horizontalBox_6.add(btnChooseButton);
 		btnChooseButton.addActionListener(listener);
 
-		horizontalStrut_12 = Box.createHorizontalStrut(20);
+		Component horizontalStrut_12 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_12);
 
-		verticalGlue_1 = Box.createVerticalGlue();
+		Component verticalGlue_1 = Box.createVerticalGlue();
 		panel_1.add(verticalGlue_1);
 
-		horizontalBox_8 = Box.createHorizontalBox();
+		Box horizontalBox_8 = Box.createHorizontalBox();
 		horizontalBox_8.setMaximumSize(new Dimension(560, 120));
 		horizontalBox_8.setBorder(new EmptyBorder(0, 0, 0, 0));
 		panel_1.add(horizontalBox_8);
 
-		horizontalStrut_15 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_15 = Box.createHorizontalStrut(5);
 		horizontalBox_8.add(horizontalStrut_15);
 
 		panel_2 = new JPanel();
@@ -504,7 +467,7 @@ public class Main {
 		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_2.setLayout(gbl_panel_2);
 
-		lblNewLabel = new JLabel("Misc.");
+		JLabel lblNewLabel = new JLabel("Misc.");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.gridwidth = 2;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
@@ -573,13 +536,13 @@ public class Main {
 		gbc_checkBox_2.gridy = 3;
 		panel_2.add(checkBox_2, gbc_checkBox_2);
 
-		horizontalStrut_14 = Box.createHorizontalStrut(5);
+		Component horizontalStrut_14 = Box.createHorizontalStrut(5);
 		horizontalBox_8.add(horizontalStrut_14);
 
-		verticalGlue_2 = Box.createVerticalGlue();
+		Component verticalGlue_2 = Box.createVerticalGlue();
 		panel_1.add(verticalGlue_2);
 
-		horizontalBox_7 = Box.createHorizontalBox();
+		Box horizontalBox_7 = Box.createHorizontalBox();
 		horizontalBox_7.setBorder(new EmptyBorder(0, 0, 0, 0));
 		panel_1.add(horizontalBox_7);
 
@@ -587,7 +550,7 @@ public class Main {
 		horizontalBox_7.add(btnBackButton);
 		btnBackButton.addActionListener(listener);
 
-		verticalStrut_3 = Box.createVerticalStrut(10);
+		Component verticalStrut_3 = Box.createVerticalStrut(10);
 		panel_1.add(verticalStrut_3);
 		btnSetting.addActionListener(listener);
 		btnGenerate.addActionListener(listener);
