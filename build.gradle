@@ -36,5 +36,20 @@ dependencies {
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
     
+    
 }
+
+apply plugin: 'application'
+
+mainClassName = 'org.evolife.Main'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName,
+                   'Class-Path': configurations.runtime.files.collect {"$it.name"}.join(' ')
+                   
+    }
+}
+
+
 
