@@ -78,46 +78,47 @@ import net.lingala.zip4j.util.Zip4jConstants;
 
 public class Main {
 	public static final String CONFIG_FILENAME = "config.properties";
-	public static final String WEB_ASSIGNMENT = "http://people.umass.edu/youngkyunlee/assignment";
+
+	private final Configuration config;
+	private final ActionListener listener;
+	private final ArrayList<File> selectedFiles;
 
 	private JFrame frmCsPdfMerge;
-	private JComboBox<String> typeComboBox;
+	
+	private JPanel mainPanel;
+	private JPanel optionPanel;
+	private JPanel settingsPanel;
 
 	private JButton btnSetting;
 	private JButton btnGenerate;
 	private JButton btnWebsite;
 	private JButton btnOpen;
-
-	private Configuration config;
-	private ActionListener listener;
-	private ArrayList<File> selectedFiles;
-	private JList<File> list;
-	private JButton btnRemove;
-	private JTextField lastNameTextField;
-	private JPanel panel_5;
-	private JSpinner spinner;
-	private JTextField firstNameTextField;
-	private JSpinner spinner_1;
 	private JButton btnUp;
 	private JButton btnDown;
-	private JPanel panel_1;
-	private JTextField saveAtTextfield;
-	private JButton btnChooseButton;
-	private JButton btnBackButton;
-	private JPanel panel_2;
+	private JButton btnChoose;
+	private JButton btnBack;
+	private JButton btnRemove;
+
+	private JComboBox<String> comboBoxType;
+	private JComboBox<Assignment> comboBoxAssignment;
+
+	private JList<File> listSelectedFiles;
+
+	private JTextField textFieldLastName;
+	private JTextField textFieldFirstName;
+	private JTextField textfieldSaveAs;
+
+	private JSpinner spinnerHomeworkNumber;
+	private JSpinner spinnerCategoryNumber;
+
 	private JCheckBox chckbxFullFilePath;
 	private JCheckBox chckbxUnequalPageSize;
 	private JCheckBox chckbxManualMode;
 	private JCheckBox checkBox;
 	private JCheckBox checkBox_1;
 	private JCheckBox checkBox_2;
-	private JPanel panel_3;
-	private JPanel panel_4;
-	private JPanel panel_6;
-	private JLabel lblAssignment;
-	private JComboBox<Assignment> comboBoxAssignment;
-	private JPanel panel;
-	
+
+
 	/**
 	 * Launch the application.
 	 */
@@ -139,30 +140,28 @@ public class Main {
 	 */
 	public Main() {
 		selectedFiles = new ArrayList<File>();
-		initializeConfig();
+		listener = new MyListener();
+		config = initializeConfig();
+
 		initialize();
-		CardLayout layout = (CardLayout)panel_3.getLayout();
-		if(chckbxManualMode.isSelected())
-			layout.first(Main.this.panel_3);
-		else
-			layout.last(Main.this.panel_3);
 	}
 
-	private void initializeConfig(){
-		Configurations configs = new Configurations();
-		final File propFile = new File(CONFIG_FILENAME);
-		final FileBasedConfigurationBuilder<PropertiesConfiguration> builder = configs.propertiesBuilder(propFile);
+	/**
+	 * Using CONFIG_FILENAME to instatiate configuration
+	 * @return configuration data
+	 */
+	private Configuration initializeConfig(){
+		final Configurations configs = new Configurations();
+		final FileBasedConfigurationBuilder<PropertiesConfiguration> builder = configs.propertiesBuilder(new File(CONFIG_FILENAME));
 		builder.setAutoSave(true);
-		try
-		{
-			config = builder.getConfiguration();
+		try{
+			return builder.getConfiguration();
 		}
-		catch (ConfigurationException cex)
-		{
+		catch (ConfigurationException cex){
 			cex.printStackTrace();
 			System.exit(-1);
 		}
-		
+		return null;
 	}
 
 	/**
@@ -175,16 +174,17 @@ public class Main {
 		frmCsPdfMerge.setBounds(100, 100, 560, 300);
 		frmCsPdfMerge.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		panel = new JPanel();
-
-		listener = new MyListener();
 		frmCsPdfMerge.getContentPane().setLayout(new CardLayout(0, 0));
 
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		frmCsPdfMerge.getContentPane().add(panel, "name_101361563781040");
+
+
+		mainPanel = new JPanel();
+
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		frmCsPdfMerge.getContentPane().add(mainPanel, "name_101361563781040");
 
 		Box verticalBox = Box.createVerticalBox();
-		panel.add(verticalBox);
+		mainPanel.add(verticalBox);
 
 		Box horizontalBox = Box.createHorizontalBox();
 		horizontalBox.setMaximumSize(new Dimension(560, 25));
@@ -197,15 +197,9 @@ public class Main {
 		JLabel lblFirstName = new JLabel("First Name:");
 		horizontalBox.add(lblFirstName);
 
-		firstNameTextField = new JTextField();
-		horizontalBox.add(firstNameTextField);
-		firstNameTextField.setColumns(15);
-		String firstName = config.getString("firstName");
-		if(firstName == null){
-			firstNameTextField.setText("");
-		}else{
-			firstNameTextField.setText(firstName);
-		}
+		textFieldFirstName = new JTextField();
+		horizontalBox.add(textFieldFirstName);
+		textFieldFirstName.setColumns(15);
 
 		Component horizontalStrut_7 = Box.createHorizontalStrut(10);
 		horizontalBox.add(horizontalStrut_7);
@@ -213,27 +207,21 @@ public class Main {
 		JLabel lblLastName = new JLabel("Last Name:");
 		horizontalBox.add(lblLastName);
 
-		lastNameTextField = new JTextField();
-		horizontalBox.add(lastNameTextField);
-		lastNameTextField.setColumns(15);
-		String lastName = config.getString("lastName");
-		if(lastName == null){
-			lastNameTextField.setText("");
-		}else{
-			lastNameTextField.setText(lastName);
-		}
+		textFieldLastName = new JTextField();
+		horizontalBox.add(textFieldLastName);
+		textFieldLastName.setColumns(15);
 
 		Component horizontalStrut_6 = Box.createHorizontalStrut(5);
 		horizontalBox.add(horizontalStrut_6);
 
-		panel_3 = new JPanel();
-		panel_3.setMaximumSize(new Dimension(32767, 28));
-		verticalBox.add(panel_3);
-		panel_3.setLayout(new CardLayout(0, 0));
+		optionPanel = new JPanel();
+		optionPanel.setMaximumSize(new Dimension(32767, 28));
+		verticalBox.add(optionPanel);
+		optionPanel.setLayout(new CardLayout(0, 0));
 
-		panel_4 = new JPanel();
+		JPanel panel_4 = new JPanel();
 		panel_4.setName("manual");
-		panel_3.add(panel_4, "name_111746893155582");
+		optionPanel.add(panel_4, "name_111746893155582");
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 
 		Box horizontalBox_1 = Box.createHorizontalBox();
@@ -247,15 +235,9 @@ public class Main {
 		JLabel lblNumber = new JLabel("HW #:");
 		horizontalBox_1.add(lblNumber);
 
-		spinner = new JSpinner();
-		spinner.setMinimumSize(new Dimension(50, 26));
-		horizontalBox_1.add(spinner);
-
-		int hwNumber = config.getInt("previousHWNumber");
-		int categoryNumber = config.getInt("previousCategoryNumber");
-
-		spinner.setModel(new SpinnerNumberModel(hwNumber,0,99,1));
-
+		spinnerHomeworkNumber = new JSpinner();
+		spinnerHomeworkNumber.setMinimumSize(new Dimension(50, 26));
+		horizontalBox_1.add(spinnerHomeworkNumber);
 
 		Component horizontalStrut_8 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_8);
@@ -263,10 +245,9 @@ public class Main {
 		JLabel lblProjectType = new JLabel("Type:");
 		horizontalBox_1.add(lblProjectType);
 
-		typeComboBox = new JComboBox<String>();
-		typeComboBox.setMinimumSize(new Dimension(70, 27));
-		horizontalBox_1.add(typeComboBox);
-		typeComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Problem Homework[PRB]", "Wireshark Lab Homework[LAB]", "Programming Homework[PRG]"}));
+		comboBoxType = new JComboBox<String>();
+		comboBoxType.setMinimumSize(new Dimension(70, 27));
+		horizontalBox_1.add(comboBoxType);
 
 		Component horizontalStrut_10 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_10);
@@ -275,36 +256,29 @@ public class Main {
 		horizontalBox_1.add(lblHwCategory);
 
 
-		spinner_1 = new JSpinner();
-		spinner_1.setMinimumSize(new Dimension(60, 26));
-		horizontalBox_1.add(spinner_1);
-		spinner_1.setModel(new SpinnerNumberModel(categoryNumber,0,99,1));
+		spinnerCategoryNumber = new JSpinner();
+		spinnerCategoryNumber.setMinimumSize(new Dimension(60, 26));
+		horizontalBox_1.add(spinnerCategoryNumber);
 
 		Component horizontalStrut_9 = Box.createHorizontalStrut(5);
 		horizontalBox_1.add(horizontalStrut_9);
-		
-		panel_6 = new JPanel();
+
+		JPanel panel_6 = new JPanel();
 		panel_6.setName("auto");
-		panel_3.add(panel_6, "name_116162073956175");
+		optionPanel.add(panel_6, "name_116162073956175");
 		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.X_AXIS));
-		
+
 		Component horizontalStrut_16 = Box.createHorizontalStrut(38);
 		panel_6.add(horizontalStrut_16);
-		
-		lblAssignment = new JLabel("Choose:");
+
+		JLabel lblAssignment = new JLabel("Choose:");
 		panel_6.add(lblAssignment);
-		
-		List<Assignment> assignments = parse();
 		comboBoxAssignment = new JComboBox<Assignment>();
-		for(Assignment assignment : assignments){
-			comboBoxAssignment.addItem(assignment);
-		}
 		comboBoxAssignment.setMinimumSize(new Dimension(200, 27));
 		panel_6.add(comboBoxAssignment);
-		
+
 		Component horizontalStrut_17 = Box.createHorizontalStrut(88);
 		panel_6.add(horizontalStrut_17);
-
 
 		Box horizontalBox_2 = Box.createHorizontalBox();
 		horizontalBox_2.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -338,10 +312,10 @@ public class Main {
 		JScrollPane scrollPane = new JScrollPane();
 		horizontalBox_2.add(scrollPane);
 
-		list = new JList<File>();
-		scrollPane.setViewportView(list);
+		listSelectedFiles = new JList<File>();
+		scrollPane.setViewportView(listSelectedFiles);
 
-		panel_5 = new JPanel();
+		JPanel panel_5 = new JPanel();
 		panel_5.setBorder(new EmptyBorder(0, 0, 0, 0));
 		horizontalBox_2.add(panel_5);
 		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.Y_AXIS));
@@ -357,14 +331,7 @@ public class Main {
 
 		btnDown = new JButton(" Down  ");
 		panel_5.add(btnDown);
-		btnRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnUp.addActionListener(listener);
-		btnDown.addActionListener(listener);
-		btnRemove.addActionListener(listener);
-		btnOpen.addActionListener(listener);
+
 
 		Box horizontalBox_3 = Box.createHorizontalBox();
 		horizontalBox_3.setMaximumSize(new Dimension(560, 25));
@@ -394,27 +361,27 @@ public class Main {
 		Component horizontalStrut_1 = Box.createHorizontalStrut(5);
 		horizontalBox_3.add(horizontalStrut_1);
 
-		panel_1 = new JPanel();
-		frmCsPdfMerge.getContentPane().add(panel_1, "name_101378567290148");
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
+		settingsPanel = new JPanel();
+		frmCsPdfMerge.getContentPane().add(settingsPanel, "name_101378567290148");
+		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
 
 		Component verticalStrut_1 = Box.createVerticalStrut(5);
-		panel_1.add(verticalStrut_1);
+		settingsPanel.add(verticalStrut_1);
 
 		Box horizontalBox_5 = Box.createHorizontalBox();
 		horizontalBox_5.setBorder(new EmptyBorder(0, 0, 0, 0));
-		panel_1.add(horizontalBox_5);
+		settingsPanel.add(horizontalBox_5);
 
 		JLabel lblSetting = new JLabel("Settings");
 		horizontalBox_5.add(lblSetting);
 
 		Component verticalStrut_2 = Box.createVerticalStrut(5);
-		panel_1.add(verticalStrut_2);
+		settingsPanel.add(verticalStrut_2);
 
 		Box horizontalBox_6 = Box.createHorizontalBox();
 		horizontalBox_6.setBorder(new EmptyBorder(0, 0, 0, 0));
 		horizontalBox_6.setMaximumSize(new Dimension(560, 25));
-		panel_1.add(horizontalBox_6);
+		settingsPanel.add(horizontalBox_6);
 
 		Component horizontalStrut_11 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_11);
@@ -422,41 +389,35 @@ public class Main {
 		JLabel lblSaveLocation = new JLabel("Save At:");
 		horizontalBox_6.add(lblSaveLocation);
 
-		saveAtTextfield = new JTextField();
-		saveAtTextfield.setEditable(false);
-		saveAtTextfield.setMaximumSize(new Dimension(2147483647, 25));
-		horizontalBox_6.add(saveAtTextfield);
-		saveAtTextfield.setColumns(10);
+		textfieldSaveAs = new JTextField();
+		textfieldSaveAs.setEditable(false);
+		textfieldSaveAs.setMaximumSize(new Dimension(2147483647, 25));
+		horizontalBox_6.add(textfieldSaveAs);
+		textfieldSaveAs.setColumns(10);
 
-		String saveAt = config.getString("saveAt");
-		if(saveAt == null){
-			saveAtTextfield.setText(System.getProperty("user.home"));
-		}else{
-			saveAtTextfield.setText(saveAt);
-		}
+
 
 		Component horizontalStrut_13 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_13);
 
-		btnChooseButton = new JButton("Choose");
-		horizontalBox_6.add(btnChooseButton);
-		btnChooseButton.addActionListener(listener);
+		btnChoose = new JButton("Choose");
+		horizontalBox_6.add(btnChoose);
 
 		Component horizontalStrut_12 = Box.createHorizontalStrut(20);
 		horizontalBox_6.add(horizontalStrut_12);
 
 		Component verticalGlue_1 = Box.createVerticalGlue();
-		panel_1.add(verticalGlue_1);
+		settingsPanel.add(verticalGlue_1);
 
 		Box horizontalBox_8 = Box.createHorizontalBox();
 		horizontalBox_8.setMaximumSize(new Dimension(560, 120));
 		horizontalBox_8.setBorder(new EmptyBorder(0, 0, 0, 0));
-		panel_1.add(horizontalBox_8);
+		settingsPanel.add(horizontalBox_8);
 
 		Component horizontalStrut_15 = Box.createHorizontalStrut(5);
 		horizontalBox_8.add(horizontalStrut_15);
 
-		panel_2 = new JPanel();
+		JPanel panel_2 = new JPanel();
 		panel_2.setForeground(Color.LIGHT_GRAY);
 		panel_2.setBorder(new LineBorder(Color.GRAY));
 		horizontalBox_8.add(panel_2);
@@ -483,7 +444,6 @@ public class Main {
 		gbc_chckbxFullFilePath.gridx = 0;
 		gbc_chckbxFullFilePath.gridy = 1;
 		panel_2.add(chckbxFullFilePath, gbc_chckbxFullFilePath);
-		chckbxFullFilePath.setSelected(config.getBoolean("useFullFilePath"));
 
 		checkBox = new JCheckBox("Unimplemented    ");
 		checkBox.setEnabled(false);
@@ -525,7 +485,6 @@ public class Main {
 		gbc_chckbxManualMode.gridy = 3;
 		panel_2.add(chckbxManualMode, gbc_chckbxManualMode);
 		chckbxManualMode.addActionListener(listener);
-		chckbxManualMode.setSelected(config.getBoolean("manualMode"));
 
 		checkBox_2 = new JCheckBox("Unimplemented    ");
 		checkBox_2.setEnabled(false);
@@ -540,73 +499,110 @@ public class Main {
 		horizontalBox_8.add(horizontalStrut_14);
 
 		Component verticalGlue_2 = Box.createVerticalGlue();
-		panel_1.add(verticalGlue_2);
+		settingsPanel.add(verticalGlue_2);
 
 		Box horizontalBox_7 = Box.createHorizontalBox();
 		horizontalBox_7.setBorder(new EmptyBorder(0, 0, 0, 0));
-		panel_1.add(horizontalBox_7);
+		settingsPanel.add(horizontalBox_7);
 
-		btnBackButton = new JButton("Back");
-		horizontalBox_7.add(btnBackButton);
-		btnBackButton.addActionListener(listener);
+		btnBack = new JButton("Back");
+		horizontalBox_7.add(btnBack);
 
 		Component verticalStrut_3 = Box.createVerticalStrut(10);
-		panel_1.add(verticalStrut_3);
+		settingsPanel.add(verticalStrut_3);
+
+		
+
+		//Set Component		
+		spinnerHomeworkNumber.setModel(new SpinnerNumberModel(config.getInt("previousHWNumber"),0,99,1));
+		spinnerCategoryNumber.setModel(new SpinnerNumberModel(config.getInt("previousCategoryNumber"),0,99,1));
+
+		textFieldFirstName.setText(config.getString("firstName"));
+		textFieldLastName.setText(config.getString("lastName"));
+
+		chckbxFullFilePath.setSelected(config.getBoolean("useFullFilePath"));
+		chckbxManualMode.setSelected(config.getBoolean("manualMode"));
+
+		final String saveAt = config.getString("saveAt");
+		textfieldSaveAs.setText(saveAt != null ? saveAt: System.getProperty("user.home"));
+
+		final String[] typeOptions = new String[] {
+				"Problem Homework[PRB]", 
+				"Wireshark Lab Homework[LAB]", 
+				"Programming Homework[PRG]"
+		};
+		
+		comboBoxType.setModel(new DefaultComboBoxModel<String>(typeOptions));
+
+		btnBack.addActionListener(listener);
 		btnSetting.addActionListener(listener);
 		btnGenerate.addActionListener(listener);
 		btnWebsite.addActionListener(listener);
+		btnChoose.addActionListener(listener);
+		btnUp.addActionListener(listener);
+		btnDown.addActionListener(listener);
+		btnRemove.addActionListener(listener);
+		btnOpen.addActionListener(listener);
+
+		CardLayout layout = (CardLayout)optionPanel.getLayout();
+		if(chckbxManualMode.isSelected())
+			layout.first(Main.this.optionPanel);
+		else
+			layout.last(Main.this.optionPanel);
+		
+		List<Assignment> assignments = parse();
+		for(Assignment assignment : assignments){
+			comboBoxAssignment.addItem(assignment);
+		}
 	}
 
 	/*
 	 * Parse information from website
 	 */
 	private List<Assignment> parse(){
-		List<Assignment> toReturn = new ArrayList<Assignment>();
-		List<String> buffer = new ArrayList<String>();
+		final List<Assignment> toReturn = new ArrayList<Assignment>();
+		final List<String> buffer = new ArrayList<String>();
+		
 		try {
-			URL url = new URL(WEB_ASSIGNMENT);
-			Scanner s = new Scanner(url.openStream());
-			parseHelper(s, buffer, toReturn);
+			final URL url = new URL(config.getString("assignmentUpdateLocation"));
+			try(final Scanner s = new Scanner(url.openStream())){
+				parseHelper(s, buffer, toReturn);
+			}
 		}
 		catch(Exception ex) {
 			JOptionPane.showMessageDialog(this.frmCsPdfMerge,
 					ex.getMessage(),
 					"Parse failed!",
 					JOptionPane.WARNING_MESSAGE);
+			ex.printStackTrace();
+			
 			toReturn.clear();
 			buffer.clear();
-			Scanner s = null;
-			try {
-				s = new Scanner(new File("assignment_cache"));
+		
+			try (final Scanner s = new Scanner(new File(config.getString("assignmentCache")))){
 				parseHelper(s,buffer,toReturn);
+				return toReturn;
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this.frmCsPdfMerge,
 						ex.getMessage(),
 						"Fatal Error",
 						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 				System.exit(-1);
-			}finally{
-				s.close();
 			}
 		}
-		PrintWriter writer = null;
-		File output = new File("assignment_cache");
-
-		try {
-			output.createNewFile();
-			writer = new PrintWriter(output);
-			for(String line : buffer){
+		
+		try(final PrintWriter writer = new PrintWriter(new File(config.getString("assignmentCache")))) {
+			for(String line : buffer)
 				writer.println(line);
-			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this.frmCsPdfMerge,
 					e.getMessage(),
 					"FATAL ERROR",
 					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
 			System.exit(-1);
-		} finally{
-			writer.close();
-		}
+		} 
 		return toReturn;
 	}
 
@@ -617,7 +613,6 @@ public class Main {
 	private void parseHelper(Scanner s, List<String> buffer, List<Assignment> toReturn) throws Exception{
 		while(s.hasNextLine()){
 			String line = null;
-			String[] splitted = null;
 			Assignment assignment = new Assignment();
 			LocalDate startDate = null, endDate = null, currDate = LocalDate.now();
 
@@ -625,7 +620,7 @@ public class Main {
 			{
 				line = s.nextLine();
 				buffer.add(line);
-				splitted = line.split(",");
+				String [] splitted = line.split(",");
 				assignment.name = splitted[0];
 				assignment.type = splitted[1];
 				assignment.hwN = Integer.parseInt(splitted[2]);
@@ -647,16 +642,19 @@ public class Main {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy, hh:mm a", Locale.ENGLISH);
 				endDate = LocalDate.parse(line, formatter);
 			}
-			if(currDate.isAfter(startDate) && currDate.isBefore(endDate)){
+			
+			if(currDate.isAfter(startDate) && currDate.isBefore(endDate))
 				toReturn.add(assignment);
-			}
 		}
-		s.close();
 	}
 
+	/**
+	 * 
+	 * @author Evolife
+	 * Assignment container
+	 */
 	private class Assignment{
-		String name;
-		String type;
+		String name, type;
 		int hwN, categoryN;
 
 		@Override
@@ -682,7 +680,7 @@ public class Main {
 				CardLayout layout = (CardLayout)(Main.this.frmCsPdfMerge.getContentPane().getLayout());
 				layout.next(Main.this.frmCsPdfMerge.getContentPane());
 			}
-			else if(actor == btnBackButton){
+			else if(actor == btnBack){
 				saveConfig();
 				CardLayout layout = (CardLayout)(Main.this.frmCsPdfMerge.getContentPane().getLayout());
 				layout.previous(Main.this.frmCsPdfMerge.getContentPane());
@@ -696,7 +694,7 @@ public class Main {
 			else if(actor == btnUp){
 				moveUp();
 			}
-			else if(actor == btnChooseButton){
+			else if(actor == btnChoose){
 				openFileChooser2();
 			}
 		}
@@ -705,29 +703,28 @@ public class Main {
 		 * Update change configrations/settings
 		 */
 		private void saveConfig(){
-			config.setProperty("saveAt", saveAtTextfield.getText());
+			config.setProperty("saveAt", textfieldSaveAs.getText());
 			config.setProperty("useFullFilePath", chckbxFullFilePath.isSelected());
 			config.setProperty("manualMode", chckbxManualMode.isSelected());
-			CardLayout layout = (CardLayout)panel_3.getLayout();
+			CardLayout layout = (CardLayout)optionPanel.getLayout();
 			if(chckbxManualMode.isSelected())
-				layout.first(Main.this.panel_3);
+				layout.first(Main.this.optionPanel);
 			else
-				layout.last(Main.this.panel_3);
+				layout.last(Main.this.optionPanel);
 			updateSelectedFileList(selectedFiles.toArray(new File[selectedFiles.size()]));
 		}
-		private final URI fURI = URI.create("http://www-edlab.cs.umass.edu/cs453/");
 		private void openBrowser(){
 			if (Desktop.getDesktop() == null || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) return;
 			try {
 				System.out.println("A");
-				Desktop.getDesktop().browse(fURI);
+				Desktop.getDesktop().browse(URI.create(config.getString("courseWebsite")));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		private void removeEntries(){
-			for(File file: list.getSelectedValuesList()){
+			for(File file: listSelectedFiles.getSelectedValuesList()){
 				selectedFiles.remove(file);
 			}
 			File[] temp = new File[selectedFiles.size()];
@@ -738,8 +735,8 @@ public class Main {
 		}
 
 		private void moveUp(){
-			int[] foo = list.getSelectedIndices();
-			for(File file: list.getSelectedValuesList()){
+			int[] foo = listSelectedFiles.getSelectedIndices();
+			for(File file: listSelectedFiles.getSelectedValuesList()){
 				int index = selectedFiles.indexOf(file);
 				if(index == 0) continue;
 				selectedFiles.set(index, selectedFiles.get(index-1));
@@ -754,12 +751,12 @@ public class Main {
 				if(foo[i] == 0) continue;
 				foo[i] = foo[i] -1;
 			}
-			list.setSelectedIndices(foo);
+			listSelectedFiles.setSelectedIndices(foo);
 		}
 
 		private void moveDown(){
-			int[] foo = list.getSelectedIndices();
-			for(File file: list.getSelectedValuesList()){
+			int[] foo = listSelectedFiles.getSelectedIndices();
+			for(File file: listSelectedFiles.getSelectedValuesList()){
 				int index = selectedFiles.indexOf(file);
 				if(index == selectedFiles.size()-1) continue;
 				selectedFiles.set(index, selectedFiles.get(index+1));
@@ -774,7 +771,7 @@ public class Main {
 				if(foo[i] == 0) continue;
 				foo[i] = foo[i] +1;
 			}
-			list.setSelectedIndices(foo);
+			listSelectedFiles.setSelectedIndices(foo);
 		}
 		private void openFileChooser(){
 			final JFileChooser fc = new JFileChooser();
@@ -802,8 +799,8 @@ public class Main {
 		}
 
 		private void updateSelectedFileList(File[] temp){
-			list.setCellRenderer(new EntryRenderer(config.getBoolean("useFullFilePath")));
-			list.setListData(temp);
+			listSelectedFiles.setCellRenderer(new EntryRenderer(config.getBoolean("useFullFilePath")));
+			listSelectedFiles.setListData(temp);
 		}
 		/*
 		 * Manipulate name of selected file entries
@@ -848,7 +845,7 @@ public class Main {
 			fc.setDialogTitle("Open");
 			int v = fc.showDialog(Main.this.frmCsPdfMerge, "Open");
 			if (v == JFileChooser.APPROVE_OPTION) {
-				saveAtTextfield.setText(fc.getSelectedFile().toString()+"/");
+				textfieldSaveAs.setText(fc.getSelectedFile().toString()+"/");
 			}
 		}
 
@@ -857,15 +854,15 @@ public class Main {
 			if(chckbxManualMode.isSelected()){
 				assignment = new Assignment();
 				try{
-					assignment.hwN = (Integer)spinner.getValue();
-					assignment.categoryN = (Integer)spinner_1.getValue();
+					assignment.hwN = (Integer)spinnerHomeworkNumber.getValue();
+					assignment.categoryN = (Integer)spinnerCategoryNumber.getValue();
 				}catch (NumberFormatException e){
 					JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge, "Error: Number plz",
 							"Error",
 							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				String choice = (String)Main.this.typeComboBox.getSelectedItem();
+				String choice = (String)Main.this.comboBoxType.getSelectedItem();
 				if(choice.equals("Problem Homework[PRB]")){
 					assignment.type="PRB";
 				}else if(choice.equals("Wireshark Lab Homework[LAB]")){
@@ -879,22 +876,22 @@ public class Main {
 			else{
 				assignment = (Assignment)comboBoxAssignment.getSelectedItem();
 			}
-			
-			String firstName = Main.this.firstNameTextField.getText();
-			String lastName = Main.this.lastNameTextField.getText();
+
+			String firstName = Main.this.textFieldFirstName.getText();
+			String lastName = Main.this.textFieldLastName.getText();
 			config.setProperty("firstName", firstName);
 			config.setProperty("lastName", lastName);
 
 			String saveAt = config.getString("saveAt") != null ? config.getString("saveAt") : "";
 			final String fileName ="HW" + String.format("%02d", assignment.hwN) + "_" + lastName +"_" +firstName+","+assignment.type+assignment.categoryN;
-			
+
 			if(assignment.type.equals("PRG")){
 				makeZip(saveAt+fileName);
 			}else{
 				makePDF(saveAt+fileName);
 			}
 		}
-		
+
 		/*
 		 * make PDF
 		 */
@@ -1031,22 +1028,22 @@ public class Main {
 				return false;
 			} 
 		}
-		
+
 		private void makeZip(String filePath){
 			try {
-				   ZipFile output = new ZipFile(filePath+".zip");
-				   ZipParameters parameters = new ZipParameters();
-				   parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-				   parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-				   for(File file : selectedFiles){
-					   output.addFile(file, parameters);
-				   }
-				   JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
-						   filePath+".zip" + " is generated!\n"
-									+ "MAKE SURE FILE IS VALID!!!",
-									"Success",
-							JOptionPane.PLAIN_MESSAGE);
-				   
+				ZipFile output = new ZipFile(filePath+".zip");
+				ZipParameters parameters = new ZipParameters();
+				parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+				parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+				for(File file : selectedFiles){
+					output.addFile(file, parameters);
+				}
+				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
+						filePath+".zip" + " is generated!\n"
+								+ "MAKE SURE FILE IS VALID!!!",
+								"Success",
+								JOptionPane.PLAIN_MESSAGE);
+
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
 						"Failed: Could not generate pdf file successfully.",
