@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Main-Class: org.evolife.Main
+Class-Path: guava-20.0.jar pdfbox-2.0.1.jar commons-configuration2-2.1
+ .jar kernel-7.0.1.jar layout-7.0.1.jar io-7.0.1.jar pdfa-7.0.1.jar zi
+ p4j-1.3.2.jar commons-beanutils-1.9.1.jar fontbox-2.0.1.jar commons-l
+ ogging-1.2.jar commons-lang3-3.3.2.jar slf4j-api-1.7.13.jar commons-c
+ ollections-3.2.1.jar
+

@@ -122,6 +122,8 @@ public class Main {
 	private JCheckBox checkBox;
 	private JCheckBox checkBox_1;
 	private JCheckBox checkBox_2;
+	private JCheckBox checkBox_3;
+	private JCheckBox chckbxFilterByDate;
 
 
 	/**
@@ -448,9 +450,9 @@ public class Main {
 		horizontalBox_8.add(panel_2);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[] {250, 250};
-		gbl_panel_2.rowHeights = new int[] {25, 0, 0, 0, 0};
+		gbl_panel_2.rowHeights = new int[] {25, 0, 0, 0, 0, 0};
 		gbl_panel_2.columnWeights = new double[]{0.0, 0.0};
-		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_2.setLayout(gbl_panel_2);
 
 		JLabel lblNewLabel = new JLabel("Misc.");
@@ -504,20 +506,20 @@ public class Main {
 		chckbxManualMode.setPreferredSize(new Dimension(160, 23));
 		chckbxManualMode.setMinimumSize(new Dimension(160, 23));
 		GridBagConstraints gbc_chckbxManualMode = new GridBagConstraints();
-		gbc_chckbxManualMode.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxManualMode.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxManualMode.gridx = 0;
 		gbc_chckbxManualMode.gridy = 3;
 		panel_2.add(chckbxManualMode, gbc_chckbxManualMode);
 		chckbxManualMode.addActionListener(listener);
 
-		checkBox_2 = new JCheckBox("Unimplemented    ");
-		checkBox_2.setEnabled(false);
-		checkBox_2.setPreferredSize(new Dimension(160, 23));
-		checkBox_2.setMinimumSize(new Dimension(160, 23));
-		GridBagConstraints gbc_checkBox_2 = new GridBagConstraints();
-		gbc_checkBox_2.gridx = 1;
-		gbc_checkBox_2.gridy = 3;
-		panel_2.add(checkBox_2, gbc_checkBox_2);
+		chckbxFilterByDate = new JCheckBox("Filter by Date");
+		chckbxFilterByDate.setPreferredSize(new Dimension(160, 23));
+		chckbxFilterByDate.setMinimumSize(new Dimension(160, 23));
+		GridBagConstraints gbc_chckbxFilterByDate = new GridBagConstraints();
+		gbc_chckbxFilterByDate.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxFilterByDate.gridx = 1;
+		gbc_chckbxFilterByDate.gridy = 3;
+		panel_2.add(chckbxFilterByDate, gbc_chckbxFilterByDate);
 
 		Component horizontalStrut_14 = Box.createHorizontalStrut(5);
 		horizontalBox_8.add(horizontalStrut_14);
@@ -547,6 +549,25 @@ public class Main {
 		chckbxFullFilePath.setSelected(config.getBoolean("useFullFilePath"));
 		chckbxManualMode.setSelected(config.getBoolean("manualMode"));
 		chckbx612x792.setSelected(config.getBoolean("use612x792"));
+		
+		checkBox_3 = new JCheckBox("Unimplemented    ");
+		checkBox_3.setPreferredSize(new Dimension(160, 23));
+		checkBox_3.setMinimumSize(new Dimension(160, 23));
+		checkBox_3.setEnabled(false);
+		GridBagConstraints gbc_checkBox_3 = new GridBagConstraints();
+		gbc_checkBox_3.insets = new Insets(0, 0, 0, 5);
+		gbc_checkBox_3.gridx = 0;
+		gbc_checkBox_3.gridy = 4;
+		panel_2.add(checkBox_3, gbc_checkBox_3);
+		
+		checkBox_2 = new JCheckBox("Unimplemented    ");
+		checkBox_2.setPreferredSize(new Dimension(160, 23));
+		checkBox_2.setMinimumSize(new Dimension(160, 23));
+		checkBox_2.setEnabled(false);
+		GridBagConstraints gbc_checkBox_2 = new GridBagConstraints();
+		gbc_checkBox_2.gridx = 1;
+		gbc_checkBox_2.gridy = 4;
+		panel_2.add(checkBox_2, gbc_checkBox_2);
 
 		final String saveAt = config.getString("saveAt");
 		textfieldSaveAs.setText(saveAt != null ? saveAt: System.getProperty("user.home"));
@@ -669,7 +690,7 @@ public class Main {
 				endDate = LocalDate.parse(line, formatter);
 			}
 
-			if(currDate.isAfter(startDate) && currDate.isBefore(endDate))
+			if(chckbxFilterByDate.isSelected()  == false |(currDate.isAfter(startDate) && currDate.isBefore(endDate)))
 				toReturn.add(assignment);
 		}
 	}
@@ -754,12 +775,19 @@ public class Main {
 			config.setProperty("saveAt", textfieldSaveAs.getText());
 			config.setProperty("useFullFilePath", chckbxFullFilePath.isSelected());
 			config.setProperty("manualMode", chckbxManualMode.isSelected());
+			config.setProperty("use612x792", chckbx612x792.isSelected());
+			config.setProperty("filterByDate", chckbxFilterByDate.isSelected());
 			CardLayout layout = (CardLayout)optionPanel.getLayout();
 			if(chckbxManualMode.isSelected())
 				layout.first(Main.this.optionPanel);
 			else
 				layout.last(Main.this.optionPanel);
 			updateSelectedFileList(selectedFiles.toArray(new File[selectedFiles.size()]));
+			comboBoxAssignment.removeAllItems();
+			List<Assignment> assignments = parse();
+			for(Assignment assignment : assignments){
+				comboBoxAssignment.addItem(assignment);
+			}
 		}
 		private void openBrowser(){
 			if (Desktop.getDesktop() == null || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) return;
@@ -876,6 +904,7 @@ public class Main {
 		private void openFileChooser2(){
 			final JFileChooser fc = new JFileChooser();
 			fc.setAcceptAllFileFilterUsed(false);
+			fc.setCurrentDirectory(new File(textfieldSaveAs.getText()));
 			fc.setFileFilter(new FileFilter(){
 
 				@Override
@@ -899,6 +928,13 @@ public class Main {
 
 		private void make(){
 			Assignment assignment = null;
+			if(selectedFiles.isEmpty()){
+				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
+						"Failed: No fiel is selected.",
+						"Failed",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			if(chckbxManualMode.isSelected()){
 				assignment = new Assignment();
 				try{
@@ -930,7 +966,7 @@ public class Main {
 			config.setProperty("firstName", firstName);
 			config.setProperty("lastName", lastName);
 
-			String saveAt = config.getString("saveAt") != null ? config.getString("saveAt") : "";
+			final String saveAt = config.getString("saveAt") != null ? config.getString("saveAt") : "";
 			final String fileName ="HW" + String.format("%02d", assignment.hwN) + "_" + lastName +"_" +firstName+","+assignment.type+assignment.categoryN;
 
 			if(assignment.type.equals("PRG")){
@@ -944,6 +980,23 @@ public class Main {
 		 * make PDF
 		 */
 		private void makePDF(String filePath){
+			if((new File(filePath +".pdf")).exists() == true){
+				int v = JOptionPane.showConfirmDialog(Main.this.frmCsPdfMerge,
+						filePath + ".pdf already exists.\n" +
+								"If you click \"Yes\", it will overwrite existing pdf file.",
+								"Warning",
+								JOptionPane.YES_NO_OPTION);
+				if(v == JOptionPane.NO_OPTION){
+					return;
+				}
+			}else{
+				try {
+					(new File(filePath +".pdf")).createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			try {
 				PdfDocument outputDoc = new PdfDocument(new PdfWriter(filePath+".pdf"));
 				for(File file: selectedFiles){
@@ -958,7 +1011,7 @@ public class Main {
 				}
 				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
 						filePath+".pdf" + " is generated!\n"
-								+ "MAKE SURE FILE IS VALID!!!",
+								+ "MAKE SURE THE FILE IS VALID!!!",
 								"Success",
 								JOptionPane.PLAIN_MESSAGE);
 				outputDoc.close();
@@ -1009,7 +1062,7 @@ public class Main {
 			try{
 				PdfDocument doc = new PdfDocument(new PdfWriter(".temp.pdf"));
 				Document tempDoc = new Document(doc);
-				doc.setDefaultPageSize(chckbx612x792.isSelected() ? PageSize.A4 : new PageSize(612,792));
+				doc.setDefaultPageSize(!chckbx612x792.isSelected() ? PageSize.A4 : new PageSize(612,792));
 				tempDoc.setTextAlignment(TextAlignment.JUSTIFIED);
 				PdfFont normal = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN);
 
@@ -1105,7 +1158,7 @@ public class Main {
 					output.addFile(file, parameters);
 				JOptionPane.showMessageDialog(Main.this.frmCsPdfMerge,
 						filePath+".zip" + " is generated!\n"
-								+ "MAKE SURE FILE IS VALID!!!",
+								+ "MAKE SURE THE FILE IS VALID!!!",
 								"Success",
 								JOptionPane.PLAIN_MESSAGE);
 
